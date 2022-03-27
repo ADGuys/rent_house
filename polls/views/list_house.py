@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from polls.models import HouseInfoModel, UserModel, PageNumberPagination
+from rent_house import settings
 
 
 class ListHouse(APIView):  # 查看房屋
@@ -51,7 +52,7 @@ class ListHouse(APIView):  # 查看房屋
                 'house_id': item.get('house_id'),
                 'house_area': item.get('house_area'),
                 'house_province': item.get('house_province'),
-                'house_img': '../../templates/' + item.get('house_img'),
+                'house_img': settings.STATIC_URL + item.get('house_img'),
                 'house_city': item.get('house_city'),
                 'house_location': item.get('house_location'),
                 'house_number': item.get('house_number'),
@@ -95,8 +96,8 @@ class ListHouse(APIView):  # 查看房屋
         # house_ojb.update(house_img=house_img.name) if house_img else None
 
         if house_img:
-            save_path = '../../templates'.format(house_img.name)
-
+            save_path = '../../static/{}/'.format(house_img.name)
+            print(save_path, 123)
             with open(save_path, 'wb') as f:
                 for content in house_img.chunks():
                     print(content, 123)

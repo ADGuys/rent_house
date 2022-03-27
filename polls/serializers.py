@@ -7,3 +7,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = models.UserModel
         # fields = ['name', 'phone_number']
         fields = '__all__'
+
+# class HouseSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = models.HouseInfoModel
+#         fields = '__all__'

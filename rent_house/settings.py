@@ -153,8 +153,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+# TEMPLATES_URL = '/templates/'
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 8  # 每页数目
 }
+
+CITY_LIST = ['北京', '上海', '广州', '深圳', '杭州', '武汉', '长沙', '厦门', '南京', '宁波', '杭州', '大连']
