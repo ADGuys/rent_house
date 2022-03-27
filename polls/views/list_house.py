@@ -70,9 +70,38 @@ class ListHouse(APIView):  # 查看房屋
 
     def post(self, requests):
         house_id = requests.POST.get('house_id')
-        start_time = requests.POST.get('start_time')
-        end_time = requests.POST.get('end_time')
-        HouseInfoModel.objects.filter(house_id=2).update(house_type=1)
+        house_city = requests.POST.get('house_city')
+        house_location = requests.POST.get('house_location')
+        house_number = requests.POST.get('house_number')
+        house_rent_type = requests.POST.get('house_rent_type')
+        house_area = requests.POST.get('house_area')
+        house_price = requests.POST.get('house_price')
+        bedroom_number = requests.POST.get('bedroom_number')
+        bathroom_number = requests.POST.get('bathroom_number')
+        house_detail = requests.POST.get('house_detail')
+        house_img = requests.FILES.get('house_img', None)
+
+        house_ojb = HouseInfoModel.objects.filter(house_id=house_id)
+
+        house_ojb.update(house_city=house_city) if house_city else None
+        house_ojb.update(house_location=house_location) if house_location else None
+        house_ojb.update(house_number=house_number) if house_number else None
+        house_ojb.update(house_rent_type=house_rent_type) if house_rent_type else None
+        house_ojb.update(house_area=house_area) if house_area else None
+        house_ojb.update(house_price=house_price) if house_price else None
+        house_ojb.update(bedroom_number=bedroom_number) if bedroom_number else None
+        house_ojb.update(bathroom_number=bathroom_number) if bathroom_number else None
+        house_ojb.update(house_detail=house_detail) if house_detail else None
+        # house_ojb.update(house_img=house_img.name) if house_img else None
+
+        if house_img:
+            save_path = '../../templates'.format(house_img.name)
+
+            with open(save_path, 'wb') as f:
+                for content in house_img.chunks():
+                    print(content, 123)
+                    f.write(content)
+
         return Response({'info': '修改成功'})
 
     def delete(self, request):

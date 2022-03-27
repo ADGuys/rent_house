@@ -14,23 +14,27 @@ class ListOrderDetail(APIView):  # 订单明细
 
     def get(self, requests):
         rent_user_id = requests.GET.get('rent_user_id')
+        start_time = requests.GET.get('start_time')
+        end_time = requests.GET.get('end_time')
 
         order_obj = OrderInfoModel.objects.filter(). \
             values('house__user__name', 'house__house_price', 'return_time', 'order_type', 'start_time', 'end_time')
 
         order_obj = order_obj.filter(house__user__user_id=rent_user_id) if rent_user_id else order_obj
+        order_obj = order_obj.filter(start_time__gt=start_time,
+                                     start_time__lte=end_time)  # 时间区间 大于start_time 小于end_time
 
         item_list = []
         order_count = 0
         for item in order_obj:
             order_count += 1
-            start_time = datetime.datetime.strptime(str(item.get('start_time'))[:10], '%Y-%m-%d')  # 转为datetime做时间处理
-            end_time = datetime.datetime.strptime(str(item.get('end_time'))[:10], '%Y-%m-%d')
+
+            rent_start_time = datetime.datetime.strptime(str(item.get('start_time'))[:10],
+                                                         '%Y-%m-%d')  # 转为datetime做时间处理
+            rent_end_time = datetime.datetime.strptime(str(item.get('end_time'))[:10], '%Y-%m-%d')
             return_time = datetime.datetime.strptime(str(item.get('return_time'))[:10], '%Y-%m-%d') if item.get(
                 'return_time') else 0
-            
-
-
+            print(rent_start_time, 123)
             item_dict = {
                 'order_count': order_count,  # 租客数量
                 'house_number': 1,
@@ -42,9 +46,9 @@ class ListOrderDetail(APIView):  # 订单明细
                 'rent_type': '申请中' if item.get('rent_type') else '退租申请',
                 'order_id': item.get('order_id'),
             }
-            start_time = datetime.datetime.strptime(str(item.get('start_time'))[:10], '%Y-%m-%d')
-            end_time = datetime.datetime.strptime(str(item.get('end_time'))[:10], '%Y-%m-%d')
-            months = rrule.rrule(rrule.MONTHLY, dtstart=start_time, until=end_time).count()
-            item_dict.update({'house_price': (months - 1) * item.get('house__house_price')})
+            # start_time = datetime.datetime.strptime(str(item.get('start_time'))[:10], '%Y-%m-%d')
+            # end_time = datetime.datetime.strptime(str(item.get('end_time'))[:10], '%Y-%m-%d')
+            # months = rrule.rrule(rrule.MONTHLY, dtstart=start_time, until=end_time).count()
+            # item_dict.update({'house_price': (months - 1) * item.get('house__house_price')})
             item_list.append(item_dict)
         return Response({'info': item_list})

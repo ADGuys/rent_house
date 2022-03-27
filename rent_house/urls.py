@@ -16,11 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from polls.views import list_user, list_house, list_order
+from polls.views import list_user, list_house, list_order, list_order_detail
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('list/user/', list_user.ListUser.as_view()),
     path('list/house/', list_house.ListHouse.as_view()),
-    path('list/order/', list_order.ListOrder.as_view())
+    path('list/order/', list_order.ListOrder.as_view()),
+    path('list/order/detail', list_order_detail.ListOrderDetail.as_view())
 ]
