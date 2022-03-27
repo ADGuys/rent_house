@@ -28,7 +28,7 @@ class ListTypeCount(APIView):  # 查看房屋
                 })
             else:
                 item_dict.update({
-                    item.house_city: item_dict[item.house_city] + item.house_city
+                    item.house_city: item_dict[item.house_city] + 1
                 })
 
         item_dict.update({
