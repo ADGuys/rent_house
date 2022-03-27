@@ -52,7 +52,7 @@ class ListHouse(APIView):  # 查看房屋
                 'house_id': item.get('house_id'),
                 'house_area': item.get('house_area'),
                 'house_province': item.get('house_province'),
-                'house_img': settings.STATIC_URL + item.get('house_img'),
+                'house_img': 'https://westabswms.blob.core.windows.net/reds/' + item.get('house_img'),
                 'house_city': item.get('house_city'),
                 'house_location': item.get('house_location'),
                 'house_number': item.get('house_number'),
