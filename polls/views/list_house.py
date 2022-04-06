@@ -1,4 +1,4 @@
-# Create your views here.111111
+# Create your views here.1
 # 还需要关联添加一些房屋信息
 
 from rest_framework.response import Response
@@ -21,7 +21,7 @@ class ListHouse(APIView):  # 查看房屋
         list_area = house_area.split(',') if house_area else []
         list_price = house_price.split(',') if house_price else []
 
-        house_obj = HouseInfoModel.objects.filter(). \
+        house_obj = HouseInfoModel.objects.filter(is_delete=1). \
             values('user__user_id', 'house_id', 'house_img', 'house_area', 'house_province', 'house_city',
                    'house_location', 'house_number', 'house_price', 'bedroom_number', 'bathroom_number', 'house_detail',
                    'date', 'user__name', 'user__phone_number', 'house_rent_type')
@@ -36,7 +36,6 @@ class ListHouse(APIView):  # 查看房屋
         house_obj = house_obj.filter(house_price__gt=int(list_price[0])) if list_price else house_obj  # 价格区间
         house_obj = house_obj.filter(house_price__lte=int(list_price[1])) if list_price and list_price[
             1] else house_obj  # 价格区间
-
         paginate = PageNumberPagination()
         house_obj = paginate.paginate_queryset(house_obj, requests)
 
@@ -52,7 +51,7 @@ class ListHouse(APIView):  # 查看房屋
                 'house_id': item.get('house_id'),
                 'house_area': item.get('house_area'),
                 'house_province': item.get('house_province'),
-                'house_img': 'https://westabswms.blob.core.windows.net/reds/' + item.get('house_img'),
+                'house_img': settings.STATIC_URL + item.get('house_img'),
                 'house_city': item.get('house_city'),
                 'house_location': item.get('house_location'),
                 'house_number': item.get('house_number'),
@@ -70,17 +69,17 @@ class ListHouse(APIView):  # 查看房屋
         return Response({'info': item_list, 'total_page': total_page})
 
     def post(self, requests):
-        house_id = requests.POST.get('house_id')
-        house_city = requests.POST.get('house_city')
-        house_location = requests.POST.get('house_location')
-        house_number = requests.POST.get('house_number')
-        house_rent_type = requests.POST.get('house_rent_type')
-        house_area = requests.POST.get('house_area')
-        house_price = requests.POST.get('house_price')
-        bedroom_number = requests.POST.get('bedroom_number')
-        bathroom_number = requests.POST.get('bathroom_number')
-        house_detail = requests.POST.get('house_detail')
-        house_img = requests.FILES.get('house_img', None)
+        house_id = requests.POST.get('house_id')  # 房屋ID
+        house_city = requests.POST.get('house_city')  # 房屋所在城市
+        house_location = requests.POST.get('house_location')  # 房屋所在地理位置
+        house_number = requests.POST.get('house_number')  # 房屋门牌号
+        house_rent_type = requests.POST.get('house_rent_type')  # 房屋租赁类型
+        house_area = requests.POST.get('house_area')  # 房屋面积
+        house_price = requests.POST.get('house_price')  # 租赁价格
+        bedroom_number = requests.POST.get('bedroom_number')  # 卧室数量
+        bathroom_number = requests.POST.get('bathroom_number')  # 洗手间数量
+        house_detail = requests.POST.get('house_detail')  # 房屋明细
+        house_img = requests.FILES.get('house_img', None)  # 房屋图片
 
         house_ojb = HouseInfoModel.objects.filter(house_id=house_id)
 
@@ -96,15 +95,14 @@ class ListHouse(APIView):  # 查看房屋
         # house_ojb.update(house_img=house_img.name) if house_img else None
 
         if house_img:
-            save_path = '../../static/{}/'.format(house_img.name)
-            print(save_path, 123)
+            save_path = '/Users/loctek/PycharmProjects/rent_house/static/{}'.format(house_img.name)
             with open(save_path, 'wb') as f:
                 for content in house_img.chunks():
-                    print(content, 123)
                     f.write(content)
 
         return Response({'info': '修改成功'})
 
-    def delete(self, request):
-        HouseInfoModel.objects.filter(house_id=1).delete()
+    def delete(self, requests):
+        house_id = requests.POST.get('house_id')
+        HouseInfoModel.objects.filter(house_id=house_id).update(is_delete=0)
         return Response({'info': '删除成功'})

@@ -12,7 +12,6 @@ class ListUser(APIView):  # 查看租户和房东
 
     def get(self, requests):
         user_obj = UserModel.objects.filter(~Q(type=0))
-        print('asd')
         item_list = []
         for item in user_obj:
             item_dict = {

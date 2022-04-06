@@ -38,6 +38,7 @@ class HouseInfoModel(models.Model):
     bathroom_number = models.IntegerField(max_length=10)
     house_detail = models.TextField(max_length=1000)
     date = models.DateTimeField()
+    is_delete = models.IntegerField(max_length=10)
 
     # pagination_class = CarPageNumberPagination()
     # page_obj = pagination_class.paginate_queryset(book, request)  # 进行分页
