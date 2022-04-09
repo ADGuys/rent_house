@@ -24,12 +24,23 @@ class InsertHouseDetail(APIView):
         bathroom_number = requests.POST.get('bathroom_number')  # 洗手间数量
         house_detail = requests.POST.get('house_detail')  # 房屋明细
         house_img = requests.FILES.get('house_img')  # 房屋图片
+        house_img_detail = requests.FILES.getlist('house_img_detail')  # 房屋明细图片
 
+        img_name = ''
+        if house_img_detail:
+            for item in house_img_detail:
+                save_path = '/Users/loctek/PycharmProjects/rent_house/static/{}'.format(item.name)
+                with open(save_path, 'wb') as f:
+                    for content in item.chunks():
+                        f.write(content)
+                img_name += item.name + ','
         house_obj = HouseInfoModel(user_id=user_id, house_city=house_city, house_location=house_location,
                                    house_number=house_number, house_rent_type=house_rent_type, house_area=house_area,
                                    house_price=house_price, bedroom_number=bedroom_number,
                                    bathroom_number=bathroom_number, house_detail=house_detail,
-                                   house_img=house_img.name, house_type=0, is_delete=1, date=datetime.datetime.now())
+                                   house_img=house_img.name, house_type=0, is_delete=1, date=datetime.datetime.now(),
+                                   house_img_detail=img_name
+                                   )
         if house_img:
             save_path = '/Users/loctek/PycharmProjects/rent_house/static/{}'.format(house_img.name)
             with open(save_path, 'wb') as f:
