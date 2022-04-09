@@ -43,10 +43,6 @@ class ListHouse(APIView):  # 查看房屋
         total_page = 0
         for item in house_obj:
             total_page += 1
-            # print(item, 312)
-            # print(a, 321)
-            # print(item['user__account'])
-            # print(item.)
             item_dict = {
                 'house_id': item.get('house_id'),
                 'house_area': item.get('house_area'),
@@ -92,7 +88,7 @@ class ListHouse(APIView):  # 查看房屋
         house_ojb.update(bedroom_number=bedroom_number) if bedroom_number else None
         house_ojb.update(bathroom_number=bathroom_number) if bathroom_number else None
         house_ojb.update(house_detail=house_detail) if house_detail else None
-        # house_ojb.update(house_img=house_img.name) if house_img else None
+        house_ojb.update(house_img=house_img.name) if house_img else None
 
         if house_img:
             save_path = '/Users/loctek/PycharmProjects/rent_house/static/{}'.format(house_img.name)

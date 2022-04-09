@@ -16,16 +16,21 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from polls.views import list_user, list_house, list_order, list_order_detail, list_type_count
+from polls.views import list_user, list_house, list_order, list_order_detail, list_type_count, insert_house_detail
 from django.views.static import serve
 
+from polls.views.user_login import UserLogin
+from polls.views.user_register import UserRegister
 from rent_house import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('user/login/', UserLogin.as_view()),
+    path('user/register/', UserRegister.as_view()),
     path('list/user/', list_user.ListUser.as_view()),
     path('list/house/', list_house.ListHouse.as_view()),
     path('list/order/', list_order.ListOrder.as_view()),
     path('list/order/detail', list_order_detail.ListOrderDetail.as_view()),
     path('list/type/count', list_type_count.ListTypeCount.as_view()),
+    path('insert/house/detail', insert_house_detail.InsertHouseDetail.as_view()),
 ]
