@@ -25,3 +25,9 @@ class UserRegister(APIView):  # 注册
                              password=password, type=type)
         user_obj.save()
         return Response({'info': '注册成功'})
+
+        # else:
+        # if user_obj['password'] == password:
+        #     return Response({'info': {'user_id': user_obj['user_id'], 'user_type': user_obj['type']}})
+        # else:
+        #     return Response({'info': '密码错误'})

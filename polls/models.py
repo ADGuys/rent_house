@@ -16,8 +16,6 @@ class UserModel(models.Model):
     password = models.CharField(max_length=32)
     type = models.IntegerField(max_length=32)
     date = models.DateTimeField()
-    info = models.CharField(max_length=32)
-    user_img = models.CharField(max_length=32)
 
     class Meta:
         db_table = "user"
@@ -41,7 +39,6 @@ class HouseInfoModel(models.Model):
     house_detail = models.TextField(max_length=1000)
     date = models.DateTimeField()
     is_delete = models.IntegerField(max_length=10)
-    house_img_detail = models.CharField(max_length=255)
 
     # pagination_class = CarPageNumberPagination()
     # page_obj = pagination_class.paginate_queryset(book, request)  # 进行分页

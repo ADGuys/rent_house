@@ -24,7 +24,7 @@ class ListHouse(APIView):  # 查看房屋
         house_obj = HouseInfoModel.objects.filter(is_delete=1). \
             values('user__user_id', 'house_id', 'house_img', 'house_area', 'house_province', 'house_city',
                    'house_location', 'house_number', 'house_price', 'bedroom_number', 'bathroom_number', 'house_detail',
-                   'date', 'user__name', 'user__phone_number', 'house_rent_type', 'house_img_detail')
+                   'date', 'user__name', 'user__phone_number', 'house_rent_type', 'house_type')
 
         house_obj = house_obj.filter(house_id=house_id) if house_id else house_obj  # ID
         house_obj = house_obj.filter(house_city=house_city) if house_city else house_obj  # CITY
@@ -58,7 +58,7 @@ class ListHouse(APIView):  # 查看房屋
                 'user_name': item.get('user__name'),
                 'user_phone_number': item.get('user__phone_number'),
                 'house_rent_type': '合租' if item.get('user__phone_number') else '整租',
-                'house_img_detail': item.get('house_img_detail')
+                'house_type': '已出租' if item.get('house_type') else '在出租'
             }
 
             item_list.append(item_dict)
@@ -100,6 +100,6 @@ class ListHouse(APIView):  # 查看房屋
         return Response({'info': '修改成功'})
 
     def delete(self, requests):
-        house_id = requests.POST.get('house_id')
+        house_id = requests.GET.get('house_id')
         HouseInfoModel.objects.filter(house_id=house_id).update(is_delete=0)
         return Response({'info': '删除成功'})

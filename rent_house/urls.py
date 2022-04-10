@@ -33,6 +33,4 @@ urlpatterns = [
     path('list/order/detail', list_order_detail.ListOrderDetail.as_view()),
     path('list/type/count', list_type_count.ListTypeCount.as_view()),
     path('insert/house/detail', insert_house_detail.InsertHouseDetail.as_view()),
-    # path('insert/house/detail', insert_house_detail.InsertHouseDetail.as_view()),
-
 ]
