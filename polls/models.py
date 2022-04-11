@@ -5,7 +5,7 @@ from rest_framework.pagination import PageNumberPagination
 class PageNumberPagination(PageNumberPagination):  # 分页器
     page_query_param = "page"
     page_size_query_param = 'page_size'  # 前端收到页面的关键字名称，默认是page
-    max_page_size = 8  # 每页数据个数
+    max_page_size = 6  # 每页数据个数
 
 
 class UserModel(models.Model):
@@ -16,6 +16,8 @@ class UserModel(models.Model):
     password = models.CharField(max_length=32)
     type = models.IntegerField(max_length=32)
     date = models.DateTimeField()
+    user_img = models.CharField(max_length=32)
+    info = models.CharField(max_length=32)
 
     class Meta:
         db_table = "user"

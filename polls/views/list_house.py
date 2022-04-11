@@ -34,15 +34,12 @@ class ListHouse(APIView):  # 查看房屋
         house_obj = house_obj.filter(house_area__lte=int(list_area[1])) if list_area and list_area[1] else house_obj
 
         house_obj = house_obj.filter(house_price__gt=int(list_price[0])) if list_price else house_obj  # 价格区间
-        house_obj = house_obj.filter(house_price__lte=int(list_price[1])) if list_price and list_price[
+        house_obj_1 = house_obj.filter(house_price__lte=int(list_price[1])) if list_price and list_price[
             1] else house_obj  # 价格区间
         paginate = PageNumberPagination()
-        house_obj = paginate.paginate_queryset(house_obj, requests)
-
+        house_obj = paginate.paginate_queryset(house_obj_1, requests)
         item_list = []
-        total_page = 0
         for item in house_obj:
-            total_page += 1
             item_dict = {
                 'house_id': item.get('house_id'),
                 'house_area': item.get('house_area'),
@@ -63,7 +60,7 @@ class ListHouse(APIView):  # 查看房屋
 
             item_list.append(item_dict)
         # house_obj = UserModel.objects.filter(user__user_id=item_dict.)
-        return Response({'info': item_list, 'total_page': total_page})
+        return Response({'info': item_list, 'total_num': paginate.django_paginator_class(house_obj_1, 6).count})
 
     def post(self, requests):
         house_id = requests.POST.get('house_id')  # 房屋ID

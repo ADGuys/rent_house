@@ -159,7 +159,11 @@ STATICFILES_DIRS = [
 # TEMPLATES_URL = '/templates/'
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 8  # 每页数目
+    'PAGE_SIZE': 6  # 每页数目
 }
 
 CITY_LIST = ['北京', '上海', '广州', '深圳', '杭州', '武汉', '长沙', '厦门', '南京', '宁波', '杭州', '大连']
+
+CORS_ALLOWED_ORIGINS = [
+    "http://10.14.233.174:1025",
+]
