@@ -8,23 +8,26 @@ from polls.models import HouseInfoModel, UserModel, PageNumberPagination
 from rent_house import settings
 
 
-class ListHouse(APIView):  # 查看房屋
+class ListHouse(APIView):
 
-    def get(self, requests):
+    def get(self, requests):  # 查看房屋
         house_id = requests.GET.get('house_id')
         house_city = requests.GET.get('house_city')
         house_area = requests.GET.get('house_area')
         house_price = requests.GET.get('house_price')
         house_type = requests.GET.get('house_type')
         house_rent_type = requests.GET.get('house_rent_type')
+        user_id = requests.GET.get('user_id')
 
         list_area = house_area.split(',') if house_area else []
         list_price = house_price.split(',') if house_price else []
 
+        user_obj = UserModel.objects.filter(user_id=int(user_id)).first() if user_id else None
+
         house_obj = HouseInfoModel.objects.filter(is_delete=1). \
             values('user__user_id', 'house_id', 'house_img', 'house_area', 'house_province', 'house_city',
                    'house_location', 'house_number', 'house_price', 'bedroom_number', 'bathroom_number', 'house_detail',
-                   'date', 'user__name', 'user__phone_number', 'house_rent_type', 'house_type')
+                   'date', 'user__name', 'user__phone_number', 'house_rent_type', 'house_type', 'house_img_detail')
 
         house_obj = house_obj.filter(house_id=house_id) if house_id else house_obj  # ID
         house_obj = house_obj.filter(house_city=house_city) if house_city else house_obj  # CITY
@@ -36,10 +39,20 @@ class ListHouse(APIView):  # 查看房屋
         house_obj = house_obj.filter(house_price__gt=int(list_price[0])) if list_price else house_obj  # 价格区间
         house_obj_1 = house_obj.filter(house_price__lte=int(list_price[1])) if list_price and list_price[
             1] else house_obj  # 价格区间
+
+        if user_obj:
+            print(123, 123)
+            if user_obj.type == 1:
+                house_obj_1 = house_obj_1.filter(user_id=int(user_id))
+
         paginate = PageNumberPagination()
         house_obj = paginate.paginate_queryset(house_obj_1, requests)
         item_list = []
         for item in house_obj:
+            list_img = item.get('house_img_detail') if item.get('house_img_detail') else []
+            if list_img:
+                list_img = list_img[:-1].split(',')
+            list_img = [settings.STATIC_URL + i for i in list_img] if list_img else None
             item_dict = {
                 'house_id': item.get('house_id'),
                 'house_area': item.get('house_area'),
@@ -55,14 +68,15 @@ class ListHouse(APIView):  # 查看房屋
                 'user_name': item.get('user__name'),
                 'user_phone_number': item.get('user__phone_number'),
                 'house_rent_type': '合租' if item.get('user__phone_number') else '整租',
-                'house_type': '已出租' if item.get('house_type') else '在出租'
+                'house_type': '已出租' if item.get('house_type') else '未出租',
+                'house_img_detail': list_img
             }
-
+            # print()
             item_list.append(item_dict)
         # house_obj = UserModel.objects.filter(user__user_id=item_dict.)
         return Response({'info': item_list, 'total_num': paginate.django_paginator_class(house_obj_1, 6).count})
 
-    def post(self, requests):
+    def post(self, requests):  # 更新房屋
         house_id = requests.POST.get('house_id')  # 房屋ID
         house_city = requests.POST.get('house_city')  # 房屋所在城市
         house_location = requests.POST.get('house_location')  # 房屋所在地理位置
@@ -96,7 +110,7 @@ class ListHouse(APIView):  # 查看房屋
 
         return Response({'info': '修改成功'})
 
-    def delete(self, requests):
+    def delete(self, requests):  # 删除房屋
         house_id = requests.GET.get('house_id')
         HouseInfoModel.objects.filter(house_id=house_id).update(is_delete=0)
         return Response({'info': '删除成功'})

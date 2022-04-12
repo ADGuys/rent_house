@@ -22,12 +22,6 @@ class UserRegister(APIView):  # 注册
             return Response({'info': '请更换账号名称'})
 
         user_obj = UserModel(name=name, phone_number=phone_number, account=account,
-                             password=password, type=type)
+                             password=password, type=type, is_delete=1, user_img='747185.jpeg')
         user_obj.save()
         return Response({'info': '注册成功'})
-
-        # else:
-        # if user_obj['password'] == password:
-        #     return Response({'info': {'user_id': user_obj['user_id'], 'user_type': user_obj['type']}})
-        # else:
-        #     return Response({'info': '密码错误'})

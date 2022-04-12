@@ -19,6 +19,7 @@ from django.urls import path
 from polls.views import list_user, list_house, list_order, list_order_detail, list_type_count, insert_house_detail
 from django.views.static import serve
 
+from polls.views.insert_order import InsertOrder
 from polls.views.user_login import UserLogin
 from polls.views.user_register import UserRegister
 from rent_house import settings
@@ -33,4 +34,5 @@ urlpatterns = [
     path('list/order/detail', list_order_detail.ListOrderDetail.as_view()),
     path('list/type/count', list_type_count.ListTypeCount.as_view()),
     path('insert/house/detail', insert_house_detail.InsertHouseDetail.as_view()),
+    path('insert/order', InsertOrder.as_view()),
 ]

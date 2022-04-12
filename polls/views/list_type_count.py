@@ -11,7 +11,7 @@ from rent_house import settings
 class ListTypeCount(APIView):  # 查看房屋
 
     def get(self, requests):
-        house_obj = HouseInfoModel.objects.filter()
+        house_obj = HouseInfoModel.objects.filter(is_delete=1)
         count_house_type = 0
         count_house_status = 0
         count_house = 0

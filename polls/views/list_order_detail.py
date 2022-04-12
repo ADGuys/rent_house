@@ -13,42 +13,51 @@ from polls.models import OrderInfoModel, UserModel, HouseInfoModel
 class ListOrderDetail(APIView):  # 订单明细
 
     def get(self, requests):
-        rent_user_id = requests.GET.get('rent_user_id')
+        user_id = requests.GET.get('user_id')
         start_time = requests.GET.get('start_time')
         end_time = requests.GET.get('end_time')
 
         order_obj = OrderInfoModel.objects.filter(). \
-            values('house__user__name', 'house__house_price', 'return_time', 'order_type', 'start_time', 'end_time')
+            values('house__user__name', 'order_amount', 'date', 'house_id', 'user_id')
 
-        order_obj = order_obj.filter(house__user__user_id=rent_user_id) if rent_user_id else order_obj
-        order_obj = order_obj.filter(start_time__gt=start_time,
-                                     start_time__lte=end_time)  # 时间区间 大于start_time 小于end_time
+        if user_id == 1:
+            pass
+
+        order_obj = order_obj.filter(house__user__user_id=user_id) if user_id else order_obj
+        order_obj = order_obj.filter(date__gt=start_time,
+                                     date__lte=end_time)  # 时间区间 大于start_time 小于end_time
 
         item_list = []
-        order_count = 0
+        tmp_list = []
         for item in order_obj:
-            order_count += 1
-
-            rent_start_time = datetime.datetime.strptime(str(item.get('start_time'))[:10],
-                                                         '%Y-%m-%d')  # 转为datetime做时间处理
-            rent_end_time = datetime.datetime.strptime(str(item.get('end_time'))[:10], '%Y-%m-%d')
-            return_time = datetime.datetime.strptime(str(item.get('return_time'))[:10], '%Y-%m-%d') if item.get(
-                'return_time') else 0
-            print(rent_start_time, 123)
-            item_dict = {
-                'order_count': order_count,  # 租客数量
-                'house_number': 1,
-                'user_name': item.get('user__name'),
-                'house_user_name': item.get('house__user__name'),
-                'start_time': item.get('start_time'),
-                'end_time': item.get('end_time'),
-                'order_type': '合同生效' if item.get('order_type') else '已退租',
-                'rent_type': '申请中' if item.get('rent_type') else '退租申请',
-                'order_id': item.get('order_id'),
+            date_time = item.get('date').strftime('%Y-%m-01')
+            args = {
+                'house_user_name': item.get('house__user__name'),  # 房东
+                'order_amount': item.get('order_amount'),  # 房租
+                'date': date_time,
+                'house_num': 1,
+                'user_num': 1
             }
-            # start_time = datetime.datetime.strptime(str(item.get('start_time'))[:10], '%Y-%m-%d')
-            # end_time = datetime.datetime.strptime(str(item.get('end_time'))[:10], '%Y-%m-%d')
-            # months = rrule.rrule(rrule.MONTHLY, dtstart=start_time, until=end_time).count()
-            # item_dict.update({'house_price': (months - 1) * item.get('house__house_price')})
-            item_list.append(item_dict)
-        return Response({'info': item_list})
+            if date_time not in tmp_list:
+                item_list.append(args)
+                tmp_list.append(date_time)
+            else:
+                item_list[tmp_list.index(date_time)].update({
+                    'order_amount': item_list[tmp_list.index(date_time)]['order_amount'] + args['order_amount'],
+                    'user_num': item_list[tmp_list.index(date_time)]['user_num'] + 1,
+                    'house_num': item_list[tmp_list.index(date_time)]['house_num'] + 1
+                })
+        tem_date_list = []
+        tem_order_amount_list = []
+        tem_user_list = []
+        if item_list:
+            for item in item_list:
+                tem_date_list.append(item['date'])
+                tem_order_amount_list.append(item['order_amount'])
+                tem_user_list.append(item['user_num'])
+
+        return Response({'info': {
+            'date': tem_date_list,
+            'order_amount': tem_order_amount_list,
+            'user_num': tem_user_list
+        }})

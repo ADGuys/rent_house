@@ -7,25 +7,33 @@ from dateutil import rrule
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from polls.models import OrderInfoModel, UserModel, HouseInfoModel
+from polls.models import OrderInfoModel, UserModel, HouseInfoModel, PageNumberPagination
 from django.db.models import Q, F
 
 
-class ListOrder(APIView):  # 订单明细
+class ListOrder(APIView):
 
-    def get(self, requests):
+    def get(self, requests):  # 查看订单明细
         # house_id = requests.GET.get('house_id')
         user_id = requests.GET.get('user_id')
-        rent_user_id = requests.GET.get('rent_user_id')
-
+        rent_user_id = ''
         order_obj = OrderInfoModel.objects.filter(). \
             values('user__name', 'house__house_location', 'house__house_number', 'order_type', 'rent_type',
                    'house__house_price', 'start_time', 'end_time', 'house__user__name', 'order_id', 'return_time',
                    'house_id')
 
-        order_obj = order_obj.filter(user__user_id=user_id) if user_id else order_obj
-        order_obj = order_obj.filter(house__user__user_id=rent_user_id) if rent_user_id else order_obj
+        user_obj = UserModel.objects.filter(user_id=user_id).first()
+        if user_obj.type == 0:
+            user_id = None
+        if user_obj.type == 1:
+            rent_user_id = user_id
+        if user_obj.type == 2:
+            user_id = user_id
 
+        order_obj = order_obj.filter(user__user_id=user_id) if user_id else order_obj
+        order_obj_1 = order_obj.filter(house__user__user_id=rent_user_id) if rent_user_id else order_obj
+        paginate = PageNumberPagination()
+        order_obj = paginate.paginate_queryset(order_obj_1, requests)
         item_list = []
 
         for item in order_obj:
@@ -55,23 +63,28 @@ class ListOrder(APIView):  # 订单明细
             months = rrule.rrule(rrule.MONTHLY, dtstart=start_time, until=end_time).count()
             item_dict.update({'house_price': (months - 1) * item.get('house__house_price')})
             item_list.append(item_dict)
-        return Response({'info': item_list})
+        return Response({'info': item_list, 'total_num': paginate.django_paginator_class(order_obj_1, 1).count})
 
-    def post(self, requests):
+    def post(self, requests):  # 订单删除确认
         order_id = requests.POST.get('order_id')
         return_type = requests.POST.get('return_type')  # 2拒绝 3同意
         house_id = requests.POST.get('house_id')
-        return_type_up = requests.POST.get('return_type_up')  # 提交
+        user_id = requests.POST.get('user_id')
+        # return_type_up = requests.POST.get('return_type_up')  # 提交
+        user_obj = UserModel.objects.filter(user_id=user_id).first()
 
         order_obj = OrderInfoModel.objects.filter(order_id=order_id)
         house_obj = HouseInfoModel.objects.filter(house_id=house_id)
 
         order_obj.update(order_type=return_type) if return_type else None
-        if return_type:
+        if user_obj.type != 2:
             order_obj.update(return_time=datetime.datetime.now()) if return_type == 3 else None
             house_obj.update(house_type=0) if return_type == 3 else None
             if int(return_type) == 2:
                 return Response({'info': '拒绝退租'})
             if int(return_type) == 3:
                 return Response({'info': '同意退租'})
-        return Response({'info': ''})
+        else:
+            order_obj.update(rent_type=1)
+            return Response({'info': '申请成功'})
+        return Response({'info': '不可能返回这个Response'})

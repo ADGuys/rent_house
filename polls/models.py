@@ -5,7 +5,7 @@ from rest_framework.pagination import PageNumberPagination
 class PageNumberPagination(PageNumberPagination):  # 分页器
     page_query_param = "page"
     page_size_query_param = 'page_size'  # 前端收到页面的关键字名称，默认是page
-    max_page_size = 6  # 每页数据个数
+    max_page_size = 20  # 每页数据个数
 
 
 class UserModel(models.Model):
@@ -18,6 +18,7 @@ class UserModel(models.Model):
     date = models.DateTimeField()
     user_img = models.CharField(max_length=32)
     info = models.CharField(max_length=32)
+    is_delete = models.IntegerField()
 
     class Meta:
         db_table = "user"
@@ -41,6 +42,7 @@ class HouseInfoModel(models.Model):
     house_detail = models.TextField(max_length=1000)
     date = models.DateTimeField()
     is_delete = models.IntegerField(max_length=10)
+    house_img_detail = models.CharField(max_length=60)
 
     # pagination_class = CarPageNumberPagination()
     # page_obj = pagination_class.paginate_queryset(book, request)  # 进行分页
@@ -59,6 +61,7 @@ class OrderInfoModel(models.Model):
     end_time = models.DateTimeField()
     return_time = models.DateTimeField()
     date = models.DateTimeField()
+    order_amount = models.IntegerField()
 
     class Meta:
         db_table = "order_info"
